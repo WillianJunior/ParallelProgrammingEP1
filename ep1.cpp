@@ -20,7 +20,7 @@ int main(int argc, char **argv) {
 		return 0;
 	}
 
-	int size = atoi(argv[1]);
+	int size = atoi(argv[1])-1;
 	char* c_type = argv[2];
 	run_type t;
 
@@ -45,20 +45,51 @@ int main(int argc, char **argv) {
 
 	generate_N(size, num_list);
 
+	int sum = 2;
+	int exec_time = 0;
+
 	int p = 2;
 	int s = size;
-	while (s > 0) {
+	while (true) {
+		#ifdef DEBUG
 		std::cout << "[main] prime: " << p << std::endl;
+		#endif
+
 		prime.emplace_back(p);
 		s = sieve(num_list, s, p, temp_list);
+		
+		#ifdef DEBUG
 		std::cout << "[main] s: " << s << std::endl;
+		#endif
+
+		// Break if the returning list reaches size 0
+		// This comparison is here to avoid the sum of an
+		// inexistent last prime number: 'sum +=p;'
+		if (s == 0)
+			break;
+
 		delete[] num_list;
 		num_list = temp_list;
 		p = num_list[0];
+		sum +=p;
 	}
 
-	for (int i : prime)
-		std::cout << i << std::endl;
+	// list output
+	if (t == r_list || t == r_all) {
+		for (int i : prime)
+			std::cout << i << " ";
+		std::cout << std::endl;
+	}
+
+	// sum output
+	if (t == r_sum || t == r_all) {
+		std::cout << sum << std::endl;
+	}
+
+	// time output
+	if (t == r_time || t == r_all) {
+		std::cout << exec_time << std::endl;
+	}
 
 	return 0;
 }
@@ -66,7 +97,11 @@ int main(int argc, char **argv) {
 void generate_N(int size, int* &num_list) {
 	for (int i=0; i<size; i++) {
 		num_list[i] = 2+i;
+
+		#ifdef DEBUG
 		std::cout << "[generate_N] generated: " << num_list[i] << std::endl;
+		#endif
+
 	}
 }
 
@@ -74,9 +109,14 @@ int sieve(int* num_list, int size, int val, int* &ret_list) {
 	ret_list = new int[size];
 	int j=0;
 	for (int i=0; i<size; i++) {
+		#ifdef DEBUG
 		std::cout << "[sieve] checking: " << num_list[i] << std::endl;
+		#endif
+
 		if (num_list[i]%val == 0) {
+			#ifdef DEBUG
 			std::cout << "[sieve] pruning: " << num_list[i] << std::endl;
+			#endif
 		} else {
 			ret_list[j++] = num_list[i];
 		}
