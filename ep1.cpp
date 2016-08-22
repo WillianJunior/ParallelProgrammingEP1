@@ -1,13 +1,44 @@
 #include <iostream>
 #include <list>
 
+#include <stdlib.h>
+#include <string.h>
+
 void generate_N(int size, int* &list);
 int sieve(int* list, int size, int val, int* &ret_list);
 
+enum run_type {
+	r_list, r_time, r_sum, r_all
+};
 
 // sieve of eratosthenes implementation
 int main(int argc, char **argv) {
-	int size = 200;
+	
+	// get input arguments
+	if (argc != 4) {
+		std::cout << "usage: ./ep1 {size} {list|time|sum|all} {threads}" << std::endl;
+		return 0;
+	}
+
+	int size = atoi(argv[1]);
+	char* c_type = argv[2];
+	run_type t;
+
+	if (strcmp(c_type, "list") == 0)
+		t = r_list;
+	else if (strcmp(c_type, "time") == 0)
+		t = r_time;
+	else if (strcmp(c_type, "sum") == 0)
+		t = r_sum;
+	else if (strcmp(c_type, "all") == 0)
+		t = r_all;
+	else {
+		std::cout << "usage: ./ep1 {size} {list|time|sum|all} {threads}" << std::endl;
+		return 0;	
+	}
+
+	int threads = atoi(argv[3]);
+
 	int* num_list = new int[size];
 	std::list<int> prime;
 	int* temp_list;
