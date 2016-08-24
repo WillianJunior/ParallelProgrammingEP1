@@ -27,3 +27,7 @@
 *.exe
 *.out
 *.app
+
+# Personal ignored files
+*.tmp
+ep1

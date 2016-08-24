@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <omp.h>
+
 void generate_N(int size, int* &list);
 int sieve(int* list, int size, int val, int* &ret_list);
 
@@ -42,11 +44,13 @@ int main(int argc, char **argv) {
 	int* num_list = new int[size];
 	std::list<int> prime;
 	int* temp_list;
+	
+	// get exec start time
+	double exec_time = omp_get_wtime();
 
 	generate_N(size, num_list);
 
 	int sum = 2;
-	int exec_time = 0;
 
 	int p = 2;
 	int s = size;
@@ -74,6 +78,9 @@ int main(int argc, char **argv) {
 		sum +=p;
 	}
 
+	// finishes time mesuring
+	exec_time = omp_get_wtime() - exec_time;
+
 	// list output
 	if (t == r_list || t == r_all) {
 		for (int i : prime)
@@ -88,7 +95,9 @@ int main(int argc, char **argv) {
 
 	// time output
 	if (t == r_time || t == r_all) {
+		#ifndef OMMIT_TIME
 		std::cout << exec_time << std::endl;
+		#endif
 	}
 
 	return 0;
