@@ -7,6 +7,10 @@
 
 #include <omp.h>
 
+#ifndef CSV_NAME
+#define CSV_NAME test.csv
+#endif
+
 void generate_N(int size, int* &list);
 void sieve(int* &list, int size, int val, int threads);
 
@@ -76,10 +80,16 @@ int main(int argc, char **argv) {
 			csv_testing = true;
 			
 			// create csv header
-			csv_file.open ("test.csv", std::ios::app);
+			csv_file.open ("CSV_NAME", std::ios::app);
+			#ifndef BASELINE
 			csv_file << std::endl << "scheduler;" << c_sched << std::endl;
+			#else
+			csv_file << std::endl << "scheduler;" << "baseline" << std::endl;
+			#endif
+
 			csv_file << "chunk_size;" << chunk_size << std::endl;
 			csv_file << "size;" << size << std::endl;
+			csv_file << "threads;" << threads << std::endl;
 
 			for (int i=0; i<testing_rep; i++)
 				csv_file << "t" << i << ";";
@@ -163,15 +173,17 @@ int main(int argc, char **argv) {
 				<< chunk_size << " " << test << std::endl;
 	}
 
-	// add average time and stdev calc to csv
-	csv_file << "=AVERAGE(OFFSET(INDIRECT(ADDRESS(ROW(), COLUMN()-" << testing_rep 
-		<< ")),0,0):OFFSET(INDIRECT(ADDRESS(ROW(), COLUMN()-1)),0,0));";
-	csv_file << "=STDEV(OFFSET(INDIRECT(ADDRESS(ROW(), COLUMN()-" << (testing_rep+1)
-		<< ")),0,0):OFFSET(INDIRECT(ADDRESS(ROW(), COLUMN()-2)),0,0))" << std::endl;
+	// final csv file operations
+	if (csv_testing) {
+		// add average time and stdev calc to csv
+		csv_file << "=AVERAGE(OFFSET(INDIRECT(ADDRESS(ROW(), COLUMN()-" << testing_rep 
+			<< ")),0,0):OFFSET(INDIRECT(ADDRESS(ROW(), COLUMN()-1)),0,0));";
+		csv_file << "=STDEV(OFFSET(INDIRECT(ADDRESS(ROW(), COLUMN()-" << (testing_rep+1)
+			<< ")),0,0):OFFSET(INDIRECT(ADDRESS(ROW(), COLUMN()-2)),0,0))" << std::endl;
 
-	// close test file
-	if (csv_testing)
+		// close test file
 		csv_file.close();
+	}
 
 	// list output
 	if (t == r_list || t == r_all) {
@@ -209,7 +221,12 @@ void generate_N(int size, int* &num_list) {
 
 void sieve(int* &num_list, int size, int val, int threads) {
 	
+	#ifdef BASELINE
+	#pragma omp parallel for num_threads(threads) default(none) shared(num_list, size, val)
+	#else
 	#pragma omp parallel for num_threads(threads) default(none) shared(num_list, size, val) schedule(runtime)
+	#endif
+
 	// #pragma omp for schedule(runtime)
 	for (int i=val+1; i<size; i++) {
 		#ifdef DEBUG
