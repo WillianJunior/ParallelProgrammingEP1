@@ -23,18 +23,18 @@ test:
 	@diff t.tmp c.tmp
 csv:
 	@g++ -std=c++11 -D OMMIT_TIME -fopenmp ep1.cpp -o ep1
-	@./ep1 500000 time 2 static 10 csv 5
-	@./ep1 500000 time 2 static 100 csv 5
-	@./ep1 500000 time 2 static 1000 csv 5
-	@./ep1 500000 time 2 static 10000 csv 5
-	@./ep1 500000 time 2 static 100000 csv 5
-	@./ep1 500000 time 2 dynamic 10 csv 5
-	@./ep1 500000 time 2 dynamic 100 csv 5
-	@./ep1 500000 time 2 dynamic 1000 csv 5
-	@./ep1 500000 time 2 dynamic 10000 csv 5
-	@./ep1 500000 time 2 dynamic 100000 csv 5
-	@./ep1 500000 time 2 guided 10 csv 5
-	@./ep1 500000 time 2 guided 100 csv 5
-	@./ep1 500000 time 2 guided 1000 csv 5
-	@./ep1 500000 time 2 guided 10000 csv 5
-	@./ep1 500000 time 2 guided 100000 csv 5
+	@./ep1 1000000 time 2 static 10 csv 5
+	@./ep1 1000000 time 2 static 100 csv 5
+	@./ep1 1000000 time 2 static 1000 csv 5
+	@./ep1 1000000 time 2 static 10000 csv 5
+	@./ep1 1000000 time 2 static 100000 csv 5
+	@./ep1 1000000 time 2 dynamic 10 csv 5
+	@./ep1 1000000 time 2 dynamic 100 csv 5
+	@./ep1 1000000 time 2 dynamic 1000 csv 5
+	@./ep1 1000000 time 2 dynamic 10000 csv 5
+	@./ep1 1000000 time 2 dynamic 100000 csv 5
+	@./ep1 1000000 time 2 guided 10 csv 5
+	@./ep1 1000000 time 2 guided 100 csv 5
+	@./ep1 1000000 time 2 guided 1000 csv 5
+	@./ep1 1000000 time 2 guided 10000 csv 5
+	@./ep1 1000000 time 2 guided 100000 csv 5

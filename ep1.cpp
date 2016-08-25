@@ -17,7 +17,7 @@ enum run_type {
 
 // sieve of eratosthenes implementation
 int main(int argc, char **argv) {
-	std::string usage = "usage: ./ep1 {size} {list|time|sum|all} {threads}"
+	std::string usage = "usage: ./ep1 {size} {list|time|sum|all} {threads} "
 		"[{sched_strategy} {chunk_size} [csv {repetitions}]]";
 	
 	// get input arguments
@@ -158,7 +158,9 @@ int main(int argc, char **argv) {
 		delete[] num_list;
 		primes_list_out = primes_list;
 
-		std::cout << "[main] finished " << size << "-" << c_sched << "-" << chunk_size << " " << test << std::endl;
+		if (csv_testing)
+			std::cout << "[main] finished " << size << "-" << c_sched << "-" 
+				<< chunk_size << " " << test << std::endl;
 	}
 
 	// add average time and stdev calc to csv
@@ -207,7 +209,8 @@ void generate_N(int size, int* &num_list) {
 
 void sieve(int* &num_list, int size, int val, int threads) {
 	
-	#pragma omp parallel for num_threads(threads) default(none) shared(num_list, size, val)
+	#pragma omp parallel for num_threads(threads) default(none) shared(num_list, size, val) schedule(runtime)
+	// #pragma omp for schedule(runtime)
 	for (int i=val+1; i<size; i++) {
 		#ifdef DEBUG
 		#pragma omp critical
