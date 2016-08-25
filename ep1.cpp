@@ -49,9 +49,11 @@ int main(int argc, char **argv) {
 	std::ofstream csv_file;
 
 	// get sched args if they exist
+	char* c_sched;
+	int chunk_size;
 	if (argc >= 6) {
-		char* c_sched = argv[4];
-		int chunk_size = atoi(argv[5]);
+		c_sched = argv[4];
+		chunk_size = atoi(argv[5]);
 		if (strcmp(c_sched, "static") == 0)
 			 omp_set_schedule(omp_sched_static, chunk_size);
 		else if (strcmp(c_sched, "dynamic") == 0)
@@ -155,6 +157,8 @@ int main(int argc, char **argv) {
 		delete[] primes_list_out;
 		delete[] num_list;
 		primes_list_out = primes_list;
+
+		std::cout << "[main] finished " << size << "-" << c_sched << "-" << chunk_size << " " << test << std::endl;
 	}
 
 	// add average time and stdev calc to csv
