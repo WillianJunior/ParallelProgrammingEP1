@@ -4,6 +4,7 @@
 #include <string.h>
 
 #include <omp.h>
+#define PROFILE
 
 void generate_N(int size, int* &list);
 void sieve(int* &list, int size, int val, int threads);
@@ -47,7 +48,7 @@ int main(int argc, char **argv) {
 
 	generate_N(size, num_list);
 
-	#ifdef DEBUG
+	#ifdef PROFILE
 	double t1 = omp_get_wtime() - exec_time;
 	#pragma omp master
 	#pragma omp critical
@@ -65,7 +66,7 @@ int main(int argc, char **argv) {
 		}
 	}
 
-	#ifdef DEBUG
+	#ifdef PROFILE
 	double t2 = omp_get_wtime() - exec_time - t1;
 	#pragma omp master
 	#pragma omp critical
@@ -83,7 +84,7 @@ int main(int argc, char **argv) {
 		}
 	}
 
-	#ifdef DEBUG
+	#ifdef PROFILE
 	double t3 = omp_get_wtime() - exec_time - t2 - t1;
 	#pragma omp master
 	#pragma omp critical
@@ -129,7 +130,7 @@ void generate_N(int size, int* &num_list) {
 
 void sieve(int* &num_list, int size, int val, int threads) {
 	
-	int j=0;
+	#pragma omp parallel for num_threads(threads) default(none) shared(num_list, size, val) schedule(dynamic, 100) 
 	for (int i=val+1; i<size; i++) {
 		#ifdef DEBUG
 		#pragma omp critical
