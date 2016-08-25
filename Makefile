@@ -27,6 +27,7 @@ csv0:
 	@./ep1 100000 time 2 static 10 csv 5
 	@./ep1 500000 time 2 static 10 csv 5
 	@./ep1 1000000 time 2 static 10 csv 5
+	echo "csv0 done"
 csv1:
 	@g++ -std=c++11 -D OMMIT_TIME -D CSV_NAME="test1.csv" -fopenmp ep1.cpp -o ep1
 	@./ep1 100000 time 2 static 10 csv 5
@@ -44,6 +45,7 @@ csv1:
 	@./ep1 100000 time 2 guided 1000 csv 5
 	@./ep1 100000 time 2 guided 10000 csv 5
 	@./ep1 100000 time 2 guided 100000 csv 5
+	echo "csv1 done"
 csv2:
 	@g++ -std=c++11 -D OMMIT_TIME -D CSV_NAME="test2.csv" -fopenmp ep1.cpp -o ep1
 	@./ep1 500000 time 2 static 10 csv 5
@@ -61,6 +63,7 @@ csv2:
 	@./ep1 500000 time 2 guided 1000 csv 5
 	@./ep1 500000 time 2 guided 10000 csv 5
 	@./ep1 500000 time 2 guided 100000 csv 5
+	echo "csv2 done"
 csv3:
 	@g++ -std=c++11 -D OMMIT_TIME -D CSV_NAME="test3.csv" -fopenmp ep1.cpp -o ep1
 	@./ep1 1000000 time 2 static 10 csv 5
@@ -78,6 +81,7 @@ csv3:
 	@./ep1 1000000 time 2 guided 1000 csv 5
 	@./ep1 1000000 time 2 guided 10000 csv 5
 	@./ep1 1000000 time 2 guided 100000 csv 5
+	echo "csv3 done"
 csv4:
 	@g++ -std=c++11 -D OMMIT_TIME -D BASELINE -D CSV_NAME="test4.csv" -fopenmp ep1.cpp -o ep1
 	@./ep1 100000 time 1 static 2000 csv 5
@@ -107,6 +111,7 @@ csv4:
 	@./ep1 1000000 time 7 static 20000 csv 5
 	@./ep1 1000000 time 8 static 20000 csv 5
 	@./ep1 1000000 time 9 static 20000 csv 5
+	echo "csv4 done"
 csv5:
 	@g++ -std=c++11 -D OMMIT_TIME -D CSV_NAME="test5.csv" -fopenmp ep1.cpp -o ep1
 	@./ep1 100000 time 1 static 2000 csv 5
@@ -190,4 +195,5 @@ csv5:
 	@./ep1 1000000 time 7 guided 20000 csv 5
 	@./ep1 1000000 time 8 guided 20000 csv 5
 	@./ep1 1000000 time 9 guided 20000 csv 5
+	echo "csv5 done"
 	
