@@ -1,5 +1,4 @@
 #include <iostream>
-#include <list>
 
 #include <stdlib.h>
 #include <string.h>
@@ -7,7 +6,7 @@
 #include <omp.h>
 
 void generate_N(int size, int* &list);
-int sieve(int* list, int size, int val, int* &ret_list);
+void sieve(int* &list, int size, int val, int threads);
 
 enum run_type {
 	r_list, r_time, r_sum, r_all
@@ -42,49 +41,62 @@ int main(int argc, char **argv) {
 	int threads = atoi(argv[3]);
 
 	int* num_list = new int[size];
-	std::list<int> prime;
-	int* temp_list;
 	
 	// get exec start time
 	double exec_time = omp_get_wtime();
 
 	generate_N(size, num_list);
 
-	int sum = 2;
+	#ifdef DEBUG
+	double t1 = omp_get_wtime() - exec_time;
+	#pragma omp master
+	#pragma omp critical
+	std::cout << "[profile] generate time: " << t << std::endl;
+	#endif
 
-	int p = 2;
-	int s = size;
-	while (true) {
-		#ifdef DEBUG
-		std::cout << "[main] prime: " << p << std::endl;
-		#endif
-
-		prime.emplace_back(p);
-		s = sieve(num_list, s, p, temp_list);
-		
-		#ifdef DEBUG
-		std::cout << "[main] s: " << s << std::endl;
-		#endif
-
-		// Break if the returning list reaches size 0
-		// This comparison is here to avoid the sum of an
-		// inexistent last prime number: 'sum +=p;'
-		if (s == 0)
-			break;
-
-		delete[] num_list;
-		num_list = temp_list;
-		p = num_list[0];
-		sum +=p;
+	// set all non-prime numbers the num_list tag 1
+	for (int p=2; p<size; p++) {	
+		if (num_list[p] == 0) {
+			#ifdef DEBUG
+			#pragma omp critical
+			std::cout << "[main:" << omp_get_thread_num() << "] checking: " << p << std::endl;
+			#endif
+			sieve(num_list, size, p, threads);
+		}
 	}
+
+	#ifdef DEBUG
+	double t2 = omp_get_wtime() - exec_time - t1;
+	#pragma omp master
+	#pragma omp critical
+	std::cout << "[profile] sieve time: " << t2 << std::endl;
+	#endif
+
+	// calculate the sum and get all prime numbers
+	int* primes_list = new int[size];
+	int last_prime = 0;
+	int sum = 0;
+	for (int p=2; p<size; p++) {
+		if (num_list[p] == 0) {
+			primes_list[last_prime++] = p;
+			sum += p;
+		}
+	}
+
+	#ifdef DEBUG
+	double t3 = omp_get_wtime() - exec_time - t2 - t1;
+	#pragma omp master
+	#pragma omp critical
+	std::cout << "[profile] sum time: " << t3 << std::endl;
+	#endif
 
 	// finishes time mesuring
 	exec_time = omp_get_wtime() - exec_time;
 
 	// list output
 	if (t == r_list || t == r_all) {
-		for (int i : prime)
-			std::cout << i << " ";
+		for (int i=0; i<last_prime; i++)
+			std::cout << primes_list[i] << " ";
 		std::cout << std::endl;
 	}
 
@@ -105,31 +117,32 @@ int main(int argc, char **argv) {
 
 void generate_N(int size, int* &num_list) {
 	for (int i=0; i<size; i++) {
-		num_list[i] = 2+i;
+		num_list[i] = 0;
 
 		#ifdef DEBUG
-		std::cout << "[generate_N] generated: " << num_list[i] << std::endl;
+		#pragma omp critical
+		std::cout << "[generate_N:" << omp_get_thread_num() << "] generated: " << num_list[i] << std::endl;
 		#endif
 
 	}
 }
 
-int sieve(int* num_list, int size, int val, int* &ret_list) {
-	ret_list = new int[size];
+void sieve(int* &num_list, int size, int val, int threads) {
+	
 	int j=0;
-	for (int i=0; i<size; i++) {
+	for (int i=val+1; i<size; i++) {
 		#ifdef DEBUG
-		std::cout << "[sieve] checking: " << num_list[i] << std::endl;
+		#pragma omp critical
+		std::cout << "[sieve:" << omp_get_thread_num() << "] checking: " << i << std::endl;
 		#endif
 
-		if (num_list[i]%val == 0) {
+		if (i%val == 0) {
 			#ifdef DEBUG
-			std::cout << "[sieve] pruning: " << num_list[i] << std::endl;
+			#pragma omp critical
+			std::cout << "[sieve:" << omp_get_thread_num() << "] pruning: " << i << std::endl;
 			#endif
-		} else {
-			ret_list[j++] = num_list[i];
+			num_list[i] = 1;
 		}
 	}
-	return j;
 }
 
